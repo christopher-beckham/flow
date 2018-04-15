@@ -52,6 +52,23 @@ TODO
 
 # Configuration
 
+In .bashrc or similar,
+
+```bash
+SINGULARITY_DIR=/some/path/to/singularity
+export SREGISTRY_STORAGE=$SINGULARITY_DIR
+export SINGULARITY_CACHEDIR=$SINGULARITY_DIR/cache
+export SREGISTRY_DATABASE=$SINGULARITY_DIR
+export SREGISTRY_NVIDIA_TOKEN=<SECRET>
+
+export DATA_FOLDER=/some/path/to/data
+```
+
+If using mongodb secured with a certificate,
+
+```bash
+export CERTIFICATE_FOLDER=/some/path/to/certs
+```
 TODO
 
 # Containers
