@@ -1,0 +1,3 @@
+[submodule "smartdispatch"]
+	path = smartdispatch
+	url = https://github.com/bouthilx/smartdispatch.git
