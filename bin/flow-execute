@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+if [ "$cluster" = "cedar" ]
+then
+    module load 'singularity/2.4'
+    CONTAINER_HOME=$SCRATCH/$1
+elif [ "$cluster" = "graham" ]
+then
+    module load 'singularity/2.4'
+    CONTAINER_HOME=$SCRATCH/$1
+fi
+
+# Pull only if it exists
+sregistry pull $1
+
+# Prepare mountings
+if [ ${CERTIFICATE_FOLDER} -z ]
+then
+    echo 'Error: certificate folder not defined. Please set $CERTIFICATE_FOLDER'
+    exit 1
+fi
+
+if [ ! -d "${DATA_FOLDER}" ]
+then
+    mkdir -p ${DATA_FOLDER}
+fi
+
+if [ ! -d "${CONTAINER_HOME}" ]
+then
+    mkdir -p ${CONTAINER_HOME}
+fi
+
+# run
+singularity exec --nv \
+    --bind ${CERTIFICATE_FOLDER}/:/certs \
+    --bind ${DATA_FOLDER}/:/data \
+    --bind ${CONTAINER_HOME}/:/home \
+    --nv $(sregistry get $1) ${@:2}
