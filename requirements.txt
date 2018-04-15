@@ -1,0 +1,5 @@
+# From PyPi
+sregistry[all]==0.0.69
+
+# From git submodules
+./smartdispatch

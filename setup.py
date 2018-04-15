@@ -10,6 +10,11 @@ def readme():
         return f.read().strip()
 
 
+install_requires = [
+    "smart-dispatch",
+    "sregistry[all]==0.0.69"
+    ]
+
 tests_require = [
     'pytest>=3.0.0'
     ]
@@ -24,7 +29,7 @@ setup(
     license='MIT',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[],
+    install_requires=install_requires,
     tests_require=tests_require,
     extras_require=dict(test=tests_require),
     scripts=[
