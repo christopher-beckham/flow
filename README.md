@@ -1,3 +1,5 @@
+[![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/917)
+
 # <sup><sub><sup><sub>[ebb &]</sub></sup></sub></sup> Flow
 
 Experiment pipeline
@@ -51,3 +53,9 @@ TODO
 # Configuration
 
 TODO
+
+# Containers
+
+[![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/917)
+
+## Pytorch 0.3.1
