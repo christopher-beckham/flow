@@ -1,1 +1,26 @@
 #!/usr/bin/env bash
+
+# TODO
+# process options like --use-commit-checksum, making the use of checksum in container name optional
+# --singularity-repo also
+
+# usage ex:
+# $ flow-deploy . SingularityTemplate \
+#       --use-commit-checksum \
+#       --singularity-repo https://${GITHUB_TOKEN}@github.com/bouthilx/qtrack.git
+
+WORKING_DIRECTORY=$1
+SINGULARITY_TEMPLATE=$2
+SINGULARITY_REPO=$5
+
+cd ${WORKING_DIRECTORY}
+    COMMIT_HASH=$(git rev-parse --short=7 HEAD)
+    echo "deploying receipe on singularity-hub: ${SINGULARITY_REPO}"
+    git clone ${SINGULARITY_REPO} singularity_repo
+    cd singularity_repo
+        sed 's/!!COMMIT_HASH!!/'"${COMMIT_HASH}"'/' ${SINGULARITY_TEMPLATE} > Singularity.${COMMIT_HASH}
+        git add Singularity.${COMMIT_HASH}
+        git commit -m "Add container for commit ${COMMIT_HASH}"
+        git push
+    cd -
+cd -
