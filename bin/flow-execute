@@ -4,15 +4,20 @@ echo "Executing on $CLUSTER"
 
 if [ "$CLUSTER" = "cedar" ]
 then
-    module load 'singularity/2.4'
+    module load 'singularity/2.5'
     CONTAINER_HOME=$SCRATCH/$1
 elif [ "$CLUSTER" = "graham" ]
 then
-    module load 'singularity/2.4'
+    module load 'singularity/2.5'
     CONTAINER_HOME=$SCRATCH/$1
 else
-    echo "ERROR: unknown cluster"
-    exit 1
+    if [ -z "${CONTAINER_HOME}" ]
+    then
+        echo "ERROR: unknown cluster. CONTAINER_HOME must be set"
+        exit 1
+    else
+        CONTAINER_HOME=${CONTAINER_HOME}/$1
+    fi
 fi
 
 # Pull only if it exists
@@ -34,17 +39,31 @@ then
     mkdir -p ${DATA_FOLDER}
 fi
 
+CONTAINER_HOME=${CONTAINER_HOME//[:]/-}
+
 echo "Container home: ${CONTAINER_HOME}"
 
-if [ ! -d "${CONTAINER_HOME}" ]
+if [ ! -d "${CONTAINER_HOME}/${USER}" ]
 then
-    mkdir -p ${CONTAINER_HOME}
+    echo "creating ${CONTAINER_HOME}/${USER}"
+    mkdir -p ${CONTAINER_HOME}/${USER}
+else
+    echo "${CONTAINER_HOME}/${USER} already exists"
 fi
+
+echo "Config dir: ${EXEC_CONFIG}"
+if [ ! -d "${EXEC_CONFIG}" ]
+then
+    mkdir -p ${EXEC_CONFIG}
+fi
+
+# cp -r ${HOME}/.config ${CONTAINER_HOME}/${USER}/
 
 # run
 SINGULARITYENV_DATA_PATH=/data \
     singularity exec \
+        --bind ${EXEC_CONFIG}/:/config \
         --bind ${CERTIFICATE_FOLDER}/:/certs \
-	--bind ${DATA_FOLDER}/:/data \
-	--bind ${CONTAINER_HOME}/:/home \
-	--nv $(sregistry get $1) ${@:2}
+        --bind ${DATA_FOLDER}/:/data \
+        --bind ${CONTAINER_HOME}/:/home \
+        --nv $(sregistry get $1) ${@:2}
