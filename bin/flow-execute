@@ -8,11 +8,11 @@ echo "Executing on $CLUSTER"
 if [ "$CLUSTER" = "cedar" ]
 then
     module load 'singularity/2.5'
-    CONTAINER_HOME=$SCRATCH/$1
+    CONTAINER_HOME=$CONTAINER_HOME/$1
 elif [ "$CLUSTER" = "graham" ]
 then
     module load 'singularity/2.5'
-    CONTAINER_HOME=$SCRATCH/$1
+    CONTAINER_HOME=$CONTAINER_HOME/$1
 else
     if [ -z "${CONTAINER_HOME}" ]
     then
