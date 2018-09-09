@@ -32,11 +32,11 @@ then
     exit 1
 fi
 
-echo "Data folder: ${DATA_FOLDER}"
+echo "Data folder: ${CONTAINER_DATA}"
 
-if [ ! -d "${DATA_FOLDER}" ]
+if [ ! -d "${CONTAINER_DATA}" ]
 then
-    mkdir -p ${DATA_FOLDER}
+    mkdir -p ${CONTAINER_DATA}
 fi
 
 CONTAINER_HOME=${CONTAINER_HOME//[:]/-}
@@ -51,19 +51,23 @@ else
     echo "${CONTAINER_HOME}/${USER} already exists"
 fi
 
-echo "Config dir: ${EXEC_CONFIG}"
-if [ ! -d "${EXEC_CONFIG}" ]
+echo "Config dir: ${CONTAINER_CONFIG}"
+if [ ! -d "${CONTAINER_CONFIG}" ]
 then
-    mkdir -p ${EXEC_CONFIG}
+    mkdir -p ${CONTAINER_CONFIG}
 fi
 
 # cp -r ${HOME}/.config ${CONTAINER_HOME}/${USER}/
 
+# TODO: find a way to mount slurm executables
+# See: https://groups.google.com/a/lbl.gov/forum/#!topic/singularity/syLcsIWWzdo
+
+
 # run
 SINGULARITYENV_DATA_PATH=/data \
     singularity exec \
-        --bind ${EXEC_CONFIG}/:/config \
+        --bind ${CONTAINER_CONFIG}/:/config \
         --bind ${CERTIFICATE_FOLDER}/:/certs \
-        --bind ${DATA_FOLDER}/:/data \
+        --bind ${CONTAINER_DATA}/:/data \
         --bind ${CONTAINER_HOME}/:/home \
         --nv $(sregistry get $1) ${@:2}
