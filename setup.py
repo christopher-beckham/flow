@@ -11,7 +11,6 @@ def readme():
 
 
 install_requires = [
-    "smart-dispatch",
     "sregistry[all]==0.0.69"
     ]
 
