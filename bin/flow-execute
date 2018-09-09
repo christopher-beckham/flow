@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
+export HOME=`getent passwd $USER | cut -d':' -f6`
+source ~/.bashrc
+
 echo "Executing on $CLUSTER"
 
 if [ "$CLUSTER" = "cedar" ]
 then
     module load 'singularity/2.5'
-    CONTAINER_HOME=$SCRATCH/$1
+    CONTAINER_HOME=$CONTAINER_HOME/$1
 elif [ "$CLUSTER" = "graham" ]
 then
     module load 'singularity/2.5'
-    CONTAINER_HOME=$SCRATCH/$1
+    CONTAINER_HOME=$CONTAINER_HOME/$1
 else
     if [ -z "${CONTAINER_HOME}" ]
     then
@@ -39,6 +42,7 @@ then
     mkdir -p ${CONTAINER_DATA}
 fi
 
+# Replace : by - in pathname
 CONTAINER_HOME=${CONTAINER_HOME//[:]/-}
 
 echo "Container home: ${CONTAINER_HOME}"
@@ -49,6 +53,12 @@ then
     mkdir -p ${CONTAINER_HOME}/${USER}
 else
     echo "${CONTAINER_HOME}/${USER} already exists"
+fi
+
+if [ -z "${CONTAINER_CONFIG}" ]
+then
+    echo 'Error: Please set $CONTAINER_CONFIG'
+    exit 1
 fi
 
 echo "Config dir: ${CONTAINER_CONFIG}"
