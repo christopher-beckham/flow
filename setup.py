@@ -33,11 +33,11 @@ setup(
     extras_require=dict(test=tests_require),
     scripts=[
         'bin/flow-deploy',
-        'bin/flow-submit',
         'bin/flow-execute'
         ],
     entry_points={
         'console_scripts': [
+            'flow-submit = flow.bin.submit:main',
             'flow-compare = flow.bin.compare:main',
             'flow-analyze = flow.bin.analyze:main'
             ]
