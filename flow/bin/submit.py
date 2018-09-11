@@ -79,7 +79,7 @@ if [ $VERBOSE = true ]; then
 fi
 
 if [ "$NEED_TO_RESUME" = true ]; then
-    if [ -z $SLURM_ARRAY_JOB_ID ] || [ "$SLURM_ARRAY_JOB_ID" = "$SLURM_JOB_ID" ]
+    if [ -z $SLURM_ARRAY_JOB_ID ] || [ "$SLURM_ARRAY_JOB_ID" = "$SLURM_JOB_ID" ]; then
         if [ $VERBOSE = true ]; then
             echo "Resubmitting {file_path}"
         fi
@@ -88,7 +88,7 @@ if [ "$NEED_TO_RESUME" = true ]; then
         echo "Job $SLURM_ARRAY_TASK_ID from array $SLURM_ARRAY_JOB_ID"
         echo "Not submitting."
     fi
-elif[ $VERBOSE = true ]; then
+elif [ $VERBOSE = true ]; then
     echo "Job completed, no need to resubmit"
 fi\
 """
