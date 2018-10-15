@@ -36,16 +36,6 @@ flow-submit [SCHEDULER OPTIONS] flow-execute shub://bouthilx/my-experiment:versi
 flow-execute shub://bouthilx/my-experiment:version [COMMAND] ...
 ```
 
-## Render results
-
-```bash
-flow-analyze
-```
-
-```bash
-flow-compare
-```
-
 # Install
 
 TODO
