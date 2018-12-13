@@ -42,6 +42,18 @@ then
     mkdir -p ${CONTAINER_DATA}
 fi
 
+if [ -z "${CONTAINER_CONFIG}" ]
+then
+    echo 'Error: Please set $CONTAINER_CONFIG'
+    exit 1
+fi
+
+echo "Config dir: ${CONTAINER_CONFIG}"
+if [ ! -d "${CONTAINER_CONFIG}" ]
+then
+    mkdir -p ${CONTAINER_CONFIG}
+fi
+
 # Replace : by - in pathname
 CONTAINER_HOME=${CONTAINER_HOME//[:]/-}
 
@@ -55,17 +67,15 @@ else
     echo "${CONTAINER_HOME}/${USER} already exists"
 fi
 
-if [ -z "${CONTAINER_CONFIG}" ]
+if [ ! -d "${CONTAINER_HOME}/${USER}/.config" ]
 then
-    echo 'Error: Please set $CONTAINER_CONFIG'
-    exit 1
+    echo "copying ${CONTAINER_CONFIG} to ${CONTAINER_HOME}/${USER}/.config"
+    cp -r ${CONTAINER_CONFIG} ${CONTAINER_HOME}/${USER}/.config
+else
+    echo "${CONTAINER_HOME}/${USER}/.config already exists"
+    ls -l ${CONTAINER_HOME}/${USER} | grep .config
 fi
 
-echo "Config dir: ${CONTAINER_CONFIG}"
-if [ ! -d "${CONTAINER_CONFIG}" ]
-then
-    mkdir -p ${CONTAINER_CONFIG}
-fi
 
 # cp -r ${HOME}/.config ${CONTAINER_HOME}/${USER}/
 
@@ -76,7 +86,6 @@ fi
 # run
 SINGULARITYENV_DATA_PATH=/data \
     singularity exec \
-        --bind ${CONTAINER_CONFIG}/:/config \
         --bind ${CERTIFICATE_FOLDER}/:/certs \
         --bind ${CONTAINER_DATA}/:/data \
         --bind ${CONTAINER_HOME}/:/home \
