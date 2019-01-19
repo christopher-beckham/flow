@@ -225,6 +225,8 @@ def main(argv=None):
 
     parser.add_argument('--options', type=str, help='SBATCH configuration from cmdline')
 
+    parser.add_argument('--prolog', type=str, help='Commands to execute before the script')
+
     parser.add_argument('--print-only', action="store_true",
                         help=('Print script that would be submitted without submitting it. '
                               'The file is deleted at end of execution.'))
@@ -282,6 +284,10 @@ def generate_script(args, file_path):
     options_str = "\n".join(OPTION.format(option=key, value=value)
                             for key, value in sorted(options.items()))
     prolog = PROLOG.format(timelimit=walltime_to_seconds(options['time']))
+
+    if args.prolog:
+        prolog += '\n' + "\n".join("export {}".format(line) for line in args.prolog.split("\n") if line) + '\n'
+
     command = COMMAND.format(container=args.container, command=format_commandline(args.commandline))
     epilog = EPILOG.format(file_path=file_path)
 
