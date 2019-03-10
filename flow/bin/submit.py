@@ -114,9 +114,12 @@ def get_unique_file_numbered(file_path):
     return numbered_file_path
 
 
-def verify_env():
-    if "GPU_SLURM_ACCOUNT" not in os.environ:
-        raise SystemExit('Error: gpu slurm account not defined. Please set $GPU_SLURM_ACCOUNT')
+def verify_env(options):
+    if "GPU_SLURM_ACCOUNT" not in os.environ and 'gpu' in options.get('gres', ''):
+        raise SystemExit('Error: Requesting gpu, but gpu slurm account not defined. '
+                         'Please set $GPU_SLURM_ACCOUNT')
+    elif "SLURM_ACCOUNT" not in os.environ:
+        raise SystemExit('Error: slurm account not defined. Please set $SLURM_ACCOUNT')
 
     if "SCRATCH" not in os.environ:
         raise SystemExit('Error: scratch space not defined. Please set $SCRATCH')
@@ -168,17 +171,16 @@ def update_options(file_path, options):
     if "job-name" not in options:
         options["job-name"] = fetch_default_job_name(file_path)
 
-    if "account" not in options:
-        options['account'] = os.environ['GPU_SLURM_ACCOUNT']
-
-    if "gres" not in options:
-        options['gres'] = 'gpu:1'
+    if "account" not in options and "gpu" in options.get('gres', ''):
+        options['account'] = os.environ.get('GPU_SLURM_ACCOUNT']
+    elif "account" not in options:
+        options['account'] = os.environ.get('SLURM_ACCOUNT', '')
 
     if "mem" not in options:
         raise SystemExit("ERROR: Option mem is not set and cannot be infered")
 
     if "cpus-per-task" not in options:
-        options['cpus-per-task'] = 4
+        options['cpus-per-task'] = 1
 
     if "export" not in options:
         options['export'] = 'ALL'
@@ -215,8 +217,6 @@ def fetch_default_job_name(file_path):
 
 def main(argv=None):
 
-    verify_env()
-
     parser = argparse.ArgumentParser(description="Submit commands with sbatch")
 
     parser.add_argument('container', help='Singularity container to execute within the script')
@@ -224,6 +224,12 @@ def main(argv=None):
     parser.add_argument('--config', help='SBATCH configuration script file')
 
     parser.add_argument('--options', type=str, help='SBATCH configuration from cmdline')
+
+    parser.add_argument('--resume', action='store_true',
+                        help='Resubmit job at end of execution. Note that for arrays only the job '
+                             '0 will resubmit, and it will resubmit the entire array')
+
+    parser.add_argument('--prolog', type=str, help='Commands to execute before the script')
 
     parser.add_argument('--print-only', action="store_true",
                         help=('Print script that would be submitted without submitting it. '
@@ -279,11 +285,20 @@ def generate_script(args, file_path):
 
     update_options(file_path, options)
 
+    verify_env(options)
+
     options_str = "\n".join(OPTION.format(option=key, value=value)
                             for key, value in sorted(options.items()))
     prolog = PROLOG.format(timelimit=walltime_to_seconds(options['time']))
+
+    if args.prolog:
+        prolog += '\n' + "\n".join("export {}".format(line) for line in args.prolog.split("\n") if line) + '\n'
+
     command = COMMAND.format(container=args.container, command=format_commandline(args.commandline))
-    epilog = EPILOG.format(file_path=file_path)
+    if args.resume:
+        epilog = EPILOG.format(file_path=file_path)
+    else:
+        epilog = ''
 
     return TEMPLATE.format(options=options_str, prolog=prolog, command=command, epilog=epilog)
 
