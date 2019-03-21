@@ -301,7 +301,7 @@ def generate_script(args, file_path):
     prolog = PROLOG.format(timelimit=walltime_to_seconds(options['time']))
 
     if args.prolog:
-        prolog += '\n' + "\n".join("export {}".format(line) for line in args.prolog.split("\n") if line) + '\n'
+        prolog += '\n' + "\n".join(line for line in args.prolog.split("\n") if line) + '\n'
 
     command = COMMAND.format(container=args.container, command=format_commandline(args.commandline))
     if args.resume:
