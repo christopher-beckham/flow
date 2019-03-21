@@ -221,6 +221,8 @@ def main(argv=None):
 
     parser.add_argument('container', help='Singularity container to execute within the script')
 
+    parser.add_argument('--root', help='Root directory for SBATCH configuration script file')
+
     parser.add_argument('--config', help='SBATCH configuration script file')
 
     parser.add_argument('--options', type=str, help='SBATCH configuration from cmdline')
@@ -247,8 +249,15 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
 
+    if args.root is None:
+        root = os.environ['SCRATCH']
+    else:
+        root = args.root
+
     if args.config is None:
-        file_path = os.path.join(os.environ['SCRATCH'], uuid.uuid4().hex + ".sh")
+        if not os.path.isdir(root):
+            os.makedirs(root)
+        file_path = os.path.join(root, uuid.uuid4().hex + ".sh")
     else:
         file_path = args.config
 
@@ -292,7 +301,7 @@ def generate_script(args, file_path):
     prolog = PROLOG.format(timelimit=walltime_to_seconds(options['time']))
 
     if args.prolog:
-        prolog += '\n' + "\n".join("export {}".format(line) for line in args.prolog.split("\n") if line) + '\n'
+        prolog += '\n' + "\n".join(line for line in args.prolog.split("\n") if line) + '\n'
 
     command = COMMAND.format(container=args.container, command=format_commandline(args.commandline))
     if args.resume:
