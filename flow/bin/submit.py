@@ -294,8 +294,6 @@ def generate_script(args, file_path):
 
     update_options(file_path, options)
 
-    verify_env(options)
-
     options_str = "\n".join(OPTION.format(option=key, value=value)
                             for key, value in sorted(options.items()))
     prolog = PROLOG.format(timelimit=walltime_to_seconds(options['time']))
