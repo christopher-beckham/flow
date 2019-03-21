@@ -51,6 +51,16 @@ COMMAND = """\
 timeout -s TERM $(($SBATCH_TIMELIMIT - 300)) flow-execute {container} {command} & WORKER_PIDS+=" $!"
 """
 
+NO_RESUME_EPILOG = """\
+for WORKER_PID in $WORKER_PIDS; do
+    if [ $VERBOSE = true ]; then
+        echo WORKER_PID=$WORKER_PID
+    fi
+    wait "$WORKER_PID"
+done
+"""
+
+
 EPILOG = """\
 NEED_TO_RESUME=false
 if [ $VERBOSE = true ]; then
@@ -305,7 +315,7 @@ def generate_script(args, file_path):
     if args.resume:
         epilog = EPILOG.format(file_path=file_path)
     else:
-        epilog = ''
+        epilog = NO_RESUME_EPILOG
 
     return TEMPLATE.format(options=options_str, prolog=prolog, command=command, epilog=epilog)
 
