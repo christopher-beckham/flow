@@ -172,7 +172,7 @@ def update_options(file_path, options):
         options["job-name"] = fetch_default_job_name(file_path)
 
     if "account" not in options and "gpu" in options.get('gres', ''):
-        options['account'] = os.environ.get('GPU_SLURM_ACCOUNT']
+        options['account'] = os.environ.get('GPU_SLURM_ACCOUNT', '')
     elif "account" not in options:
         options['account'] = os.environ.get('SLURM_ACCOUNT', '')
 
