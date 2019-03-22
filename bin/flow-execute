@@ -23,9 +23,6 @@ else
     fi
 fi
 
-# Pull only if it exists
-sregistry pull $1
-
 # Prepare mountings
 echo "Certificate folder: ${CERTIFICATE_FOLDER}"
 
