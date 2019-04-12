@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export HOME=`getent passwd $USER | cut -d':' -f6`
-source ~/.bashrc
+# source ~/.bashrc
 
 echo "Executing on $CLUSTER"
 
