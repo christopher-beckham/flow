@@ -296,7 +296,7 @@ def main(argv=None):
 
     cwd = os.getcwd()
     try:
-        os.chdir(os.dirname(file_path))
+        os.chdir(os.path.dirname(file_path))
         commandline = 'sbatch {}'.format(file_path)
         print("Executing: {}".format(commandline))
         asyncio.get_event_loop().run_until_complete(execute(commandline))
