@@ -294,9 +294,14 @@ def main(argv=None):
     if args.generate_only:
         sys.exit(0)
 
-    commandline = 'sbatch {}'.format(file_path)
-    print("Executing: {}".format(commandline))
-    asyncio.get_event_loop().run_until_complete(execute(commandline))
+    cwd = os.getcwd()
+    try:
+        os.chdir(os.dirname(file_path))
+        commandline = 'sbatch {}'.format(file_path)
+        print("Executing: {}".format(commandline))
+        asyncio.get_event_loop().run_until_complete(execute(commandline))
+    finally:
+        os.chdir(cwd)
 
 
 def generate_script(args, file_path):
