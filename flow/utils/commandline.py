@@ -23,7 +23,7 @@ def execute(commandline, print_only=False):
 
     proc = yield from create
 
-    create_task = getattr(asyncio, 'async')
+    create_task = getattr(asyncio, 'ensure_future')
 
     tasks = [create_task(log_stream(proc.stdout)),
              create_task(log_stream(proc.stderr)),

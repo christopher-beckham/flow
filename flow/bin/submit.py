@@ -48,7 +48,7 @@ SBATCH_TIMELIMIT={timelimit}
 """
 
 COMMAND = """\
-timeout -s TERM $(($SBATCH_TIMELIMIT - 300)) flow-execute {container} {command} & WORKER_PIDS+=" $!"
+timeout -s TERM $(($SBATCH_TIMELIMIT - 300)) {command} & WORKER_PIDS+=" $!"
 """
 
 NO_RESUME_EPILOG = """\
@@ -186,10 +186,10 @@ def update_options(file_path, options):
     if "job-name" not in options:
         options["job-name"] = fetch_default_job_name(file_path)
 
-    if "account" not in options and "gpu" in options.get('gres', ''):
-        options['account'] = os.environ.get('GPU_SLURM_ACCOUNT', '')
-    elif "account" not in options:
-        options['account'] = os.environ.get('SLURM_ACCOUNT', '')
+    #if "account" not in options and "gpu" in options.get('gres', ''):
+    #    options['account'] = os.environ.get('GPU_SLURM_ACCOUNT', '')
+    #elif "account" not in options:
+    #    options['account'] = os.environ.get('SLURM_ACCOUNT', '')
 
     if "mem" not in options:
         raise SystemExit("ERROR: Option mem is not set and cannot be infered")
@@ -234,7 +234,7 @@ def main(argv=None):
 
     parser = argparse.ArgumentParser(description="Submit commands with sbatch")
 
-    parser.add_argument('container', help='Singularity container to execute within the script')
+    #parser.add_argument('container', help='Singularity container to execute within the script')
 
     parser.add_argument('--root', help='Root directory for SBATCH configuration script file')
 
@@ -277,7 +277,7 @@ def main(argv=None):
         file_path = args.config
 
     print("Submitting {}".format(file_path))
-    print("With container {}".format(args.container))
+    #print("With container {}".format(args.container))
     print("With arguments {}".format(args.commandline))
 
     file_path = get_unique_file_numbered(file_path)
@@ -321,7 +321,7 @@ def generate_script(args, file_path):
     if args.prolog:
         prolog += '\n' + "\n".join(line for line in args.prolog.split("\n") if line) + '\n'
 
-    command = COMMAND.format(container=args.container, command=format_commandline(args.commandline))
+    command = COMMAND.format(command=format_commandline(args.commandline))
     if args.resume:
         epilog = EPILOG.format(file_path=file_path)
     else:
