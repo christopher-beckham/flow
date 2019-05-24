@@ -137,6 +137,7 @@ def verify_env(options):
 
 OPTION_REGEX = re.compile("^#SBATCH --?([a-zA-Z]+.*?)=(.*?)$")
 
+
 def read_options_from_file(file_options):
     if file_options is None or not os.path.exists(file_options):
         return {}
@@ -157,8 +158,10 @@ def read_options_from_file(file_options):
 
 
 def read_options_from_cmdline(file_options):
-    options = {}
+    if file_options is None:
+        return {}
 
+    options = {}
     for option in file_options.split(";"):
         if not option:
             continue
