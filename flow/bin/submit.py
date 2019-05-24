@@ -235,7 +235,7 @@ def main(argv=None):
 
     parser.add_argument('--root', help='Root directory for SBATCH configuration script file')
 
-    parser.add_argument('--config', help='SBATCH configuration script file')
+    parser.add_argument('--config', type=str, help='SBATCH configuration script file')
 
     parser.add_argument('--options', type=str, help='SBATCH configuration from cmdline')
 
@@ -266,7 +266,7 @@ def main(argv=None):
     else:
         root = args.root
 
-    if args.config is None:
+    if not args.config:
         if not os.path.isdir(root):
             os.makedirs(root)
         file_path = os.path.join(root, uuid.uuid4().hex + ".sh")
