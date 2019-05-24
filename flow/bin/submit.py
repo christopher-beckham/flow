@@ -156,10 +156,12 @@ def read_options_from_file(file_options):
     return options
 
 
-def read_options_from_cmdline(cmdline_options):
+def read_options_from_cmdline(file_options):
     options = {}
 
-    for option in cmdline_options.split(";"):
+    for option in file_options.split(";"):
+        if not option:
+            continue
         split = option.strip().split("=")
         key = split[0]
         value = "=".join(split[1:])
