@@ -1,68 +1,28 @@
-[![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/917)
-
 # <sup><sub><sup><sub>[ebb &]</sub></sup></sub></sup> Flow
 
-Experiment pipeline
+Experiment pipeline.
 
-TODO
+## Instructions
 
-# Tools
+Clone this repo, and install it by running `python setup.py develop`. Then, add this blurb to your `~/.bashrc`:
 
-## Deploy code to singularity-hub
-
-Include it in .travis.yml files for automatic deployment after successful tests.
-
-```bash
-flow-deploy ...
+```
+FLOW_DIR=<path to your flow github repo>/flow/bin
+export FLOW_DIR
+alias flow-submit="python $FLOW_DIR/flow/submit.py"
 ```
 
-## Submit jobs on clusters
+Then, for whatever research repository you'd like to use this for, make a script which invokes `flow-submit`. For example, for one of my projects, I have a script on the Compute Canada cluster called `flow_submit_celeba_8g.sh`:
 
-Using SmartDispatch as a backend
-
-```bash
-flow-submit [SCHEDULER OPTIONS] [COMMAND] ...
 ```
+#!/bin/bash
 
-Can be combined with `flow-execute`
+echo "Submitting script: " $1
 
-```bash
-flow-submit [SCHEDULER OPTIONS] flow-execute shub://bouthilx/my-experiment:version [COMMAND] ...
+flow-submit \
+--prolog="source ../envs/env_celeba.sh cc" `# copy celeba dataset to tmp dir` \
+--resume \
+--options "mem=8G;time=12:00:00;account=rpp-bengioy;ntasks=1;cpus-per-task=4;gres=gpu:1" \
+--root=`pwd` \
+launch $1
 ```
-
-## Execute jobs using singularity containers
-
-```bash
-flow-execute shub://bouthilx/my-experiment:version [COMMAND] ...
-```
-
-# Install
-
-TODO
-
-# Configuration
-
-In .bashrc or similar,
-
-```bash
-SINGULARITY_DIR=/some/path/to/singularity
-export SREGISTRY_STORAGE=$SINGULARITY_DIR
-export SINGULARITY_CACHEDIR=$SINGULARITY_DIR/cache
-export SREGISTRY_DATABASE=$SINGULARITY_DIR
-export SREGISTRY_NVIDIA_TOKEN=<SECRET>
-
-export DATA_FOLDER=/some/path/to/data
-```
-
-If using mongodb secured with a certificate,
-
-```bash
-export CERTIFICATE_FOLDER=/some/path/to/certs
-```
-TODO
-
-# Containers
-
-[![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/917)
-
-## Pytorch 0.3.1
