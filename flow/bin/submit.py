@@ -48,7 +48,7 @@ SBATCH_TIMELIMIT={timelimit}
 """
 
 COMMAND = """\
-timeout -s TERM $(($SBATCH_TIMELIMIT - 300)) {command} & WORKER_PIDS+=" $!"
+timeout -s TERM $(($SBATCH_TIMELIMIT - 300)) bash {command} & WORKER_PIDS+=" $!"
 """
 
 NO_RESUME_EPILOG = """\
@@ -186,10 +186,10 @@ def update_options(file_path, options):
     if "job-name" not in options:
         options["job-name"] = fetch_default_job_name(file_path)
 
-    #if "account" not in options and "gpu" in options.get('gres', ''):
-    #    options['account'] = os.environ.get('GPU_SLURM_ACCOUNT', '')
-    #elif "account" not in options:
-    #    options['account'] = os.environ.get('SLURM_ACCOUNT', '')
+    if "account" not in options and "gpu" in options.get('gres', ''):
+        options['account'] = os.environ.get('GPU_SLURM_ACCOUNT', '')
+    elif "account" not in options:
+        options['account'] = os.environ.get('SLURM_ACCOUNT', '')
 
     if "mem" not in options:
         raise SystemExit("ERROR: Option mem is not set and cannot be infered")
@@ -201,10 +201,10 @@ def update_options(file_path, options):
         options['export'] = 'ALL'
 
     if "output" not in options:
-        options['output'] = file_path + ".%A.%a.out"
+        options['output'] = file_path + ".slurm-id-%A.%a.out"
 
     if "error" not in options:
-        options['error'] = file_path + ".%A.%a.err"
+        options['error'] = file_path + ".slurm-id-%A.%a.err"
 
     return options
 
@@ -288,7 +288,7 @@ def main(argv=None):
     finally:
         if args.print_only and os.path.exists(file_path):
             os.remove(file_path)
-    
+
     if args.print_only:
         print(script)
         sys.exit(0)
