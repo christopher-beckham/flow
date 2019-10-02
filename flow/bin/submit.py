@@ -45,6 +45,20 @@ TIMEOUT_EXIT_CODE=124
 VERBOSE=true
 WORKER_PIDS=""
 SBATCH_TIMELIMIT={timelimit}
+TEST={file_path}
+
+# From: https://docs.mila.quebec/slurm/advanced.html#handling-preemption
+#
+exit_script() {{
+    trap - SIGTERM # clear the trap
+    # Optional: sends SIGTERM to child/sub processes
+    kill -- -$$
+    echo "Resubmitting {file_path} due to preemption..."
+    sbatch {file_path}
+}}
+
+trap exit_script SIGTERM
+
 """
 
 COMMAND = """\
@@ -316,7 +330,8 @@ def generate_script(args, file_path):
 
     options_str = "\n".join(OPTION.format(option=key, value=value)
                             for key, value in sorted(options.items()))
-    prolog = PROLOG.format(timelimit=walltime_to_seconds(options['time']))
+    prolog = PROLOG.format(timelimit=walltime_to_seconds(options['time']),
+                           file_path=file_path)
 
     if args.prolog:
         prolog += '\n' + "\n".join(line for line in args.prolog.split("\n") if line) + '\n'
